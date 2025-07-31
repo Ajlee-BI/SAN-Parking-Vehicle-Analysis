@@ -1,6 +1,6 @@
 # SAN Airport Authority Business Intelligence Summer Internship 2025
 
-### Goal of the Project  
+## Goal of the Project  
 
 The primary goal of this project was to **enrich the airport’s parking transaction data** with detailed vehicle information — including vehicle type, specifications, and market value — to enable **customer segmentation** based on where travelers park and what kind of cars they drive.  
 
@@ -10,7 +10,11 @@ The project was divided into three key components:
 2. **ETL Pipeline from Snowflake** – Built an ETL pipeline to integrate transaction data from the airport’s parking vendors (Chauntry, FlashValet, SKIDATA). The pipeline enriched these transcaction data with an external Vehicle Database API to append **vehicle-specific attributes** and **market value**.  
 3. **Power BI Reporting** – Combined all transaction data along with vehicle value to produce a **monthly snapshot table** in Power BI, providing an overall view of parking behaviors and customer segments for analysis and decision-making.  
 
-### Computer-Vision / OCR Model Explained
+
+
+
+
+## Computer-Vision / OCR Model Explained
 
 The first stage of the project involved building an automated script that used a **custom-trained computer vision model** alongside an OCR reader to detect and read license plate characters from photos.  
 
@@ -30,18 +34,13 @@ This makes it difficult to extract a perfectly clean string ready for use in the
 - Training a **custom OCR model** specifically for U.S. license plates  
 - Building an **object classification model** that can better distinguish numbers and letters on plates  
 
-
-
-
-
-
 **YOLOv8 License Plate Object Detection Training Script**
 Script that trained the YOLOv8 Model to detect license plates within a photo, ran it for 100 epochs to improve accuracy. The model itself is pretty accurate but does make mistakes on a rare occasion
 
 **Automated OCR Script**
 Script that automatically goes through photos of license plates, detects them within the image an uses an OCR reader to turn it into a string and then saves them as a .csv file 
 
-### Additonal Resources
+**Additonal Resources**
 [License plate specific OCR model that can be custom trained](https://github.com/ankandrew/fast-plate-ocr)
 - Include link to license plate datasets
 - Include link to test photos
@@ -49,8 +48,7 @@ Script that automatically goes through photos of license plates, detects them wi
 
 
 
-
-### ETL Pipeline Explained:
+## ETL Pipeline Explained:
 Second Stage: Parking Transaction Data Integration
 The second stage of the project focused on consolidating transaction data from three different parking lot vendor sources — Chauntry, FlashValet, and SKIDATA — into a unified, dynamic parking transaction table. This table serves as the foundation for a parking star schema, which provides a structured view of each transaction and connects to various dimensions for analysis.
 The schema captures key transaction details, including:
@@ -59,7 +57,7 @@ The schema captures key transaction details, including:
 - Parking lot location
 - Source system (Chauntry, FlashValet, or SKIDATA)
 
-### Key Challenge: SKIDATA Transaction Structure
+**Key Challenge: SKIDATA Transaction Structure**
 One of the biggest challenges during this phase was handling SKIDATA’s unique table design. Unlike the other vendors, SKIDATA records up to four rows for a single parking transaction because it logs each step in the parking process separately and each row stores a revenue amount but the only one that has an actual number besides zero.
 
 Each row is labeled with a MovementTypeDesig, which indicates the stage of the transaction. The sequence can vary depending on how the customer interacts with the system. For example:
