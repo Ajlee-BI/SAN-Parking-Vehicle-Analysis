@@ -14,7 +14,7 @@ Script that trained the YOLOv8 Model to detect license plates within a photo, ra
 Script that automatically goes through photos of license plates, detects them within the image an uses an OCR reader to turn it into a string and then saves them as a .csv file 
 
 ### Additonal Resources
-- Include the link to open source Easy OCR
+[License plate specific OCR model that can be custom trained](https://github.com/ankandrew/fast-plate-ocr)
 - Include link to license plate datasets
 - Include link to test photos
 
@@ -28,7 +28,7 @@ The schema captures key transaction details, including:
 - Source system (Chauntry, FlashValet, or SKIDATA)
 
 ### Key Challenge: SKIDATA Transaction Structure
-One of the biggest challenges during this phase was handling SKIDATA’s unique table design. Unlike the other vendors, SKIDATA records up to four rows for a single parking transaction because it logs each step in the parking process separately.
+One of the biggest challenges during this phase was handling SKIDATA’s unique table design. Unlike the other vendors, SKIDATA records up to four rows for a single parking transaction because it logs each step in the parking process separately and each row stores a revenue amount but the only one that has an actual number besides zero.
 
 Each row is labeled with a MovementTypeDesig, which indicates the stage of the transaction. The sequence can vary depending on how the customer interacts with the system. For example:
 
@@ -38,10 +38,16 @@ If a customer pays at the pay station before driving to the gate, the sequence l
 If a customer drives to the gate and is rejected before paying, the sequence may look like:
 (Entry → Rejection → Exit → Transaction)
 
-To normalize this data, we had to pivot SKIDATA’s multi-row structure into a single-row format, effectively “elongating” the rows into columns. This process required careful mapping of MovementTypeDesig values to ensure that each transaction was accurately represented in the unified schema.
-
+To standardize the data, we transformed SKIDATA’s multi-row structure into a single-row format by using SQL lead and lag functions, combined with a WHERE clause to filter only rows that represented complete transactions. This approach effectively pivoted the data, turning sequential movement events into columns. Careful mapping of MovementTypeDesig values was essential to ensure every transaction was accurately reconstructed and aligned within the unified schema.
 
 
 
 - Include Image of 1 complete transaction highlighted to show the 4 rows
 - Include an image afterwards to show the pivoted / elongated table.
+
+## API Notebook Explained:
+
+
+## Monthly_TXN_Sample
+
+## MONTHLY_SNAPSHOT_
