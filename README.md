@@ -1,21 +1,44 @@
 # SAN Airport Authority Business Intelligence Summer Internship 2025
 
-## Goal of the project:
-The goal of this project was to be able to enrich the Airport's parking transaction data with vehicle value, and vehicle specific information that could help segement customers based upon where they parked and what kind of car they drive. The project was broken down into three seperate parts: Computer-Vision / OCR model to take license plate images and transform them into a usable string of characters, ETL pipeline from snowflake taking transaction data from out current parking lot vendors and using license plate data along with Vehicle Databases API to add vehicle specific data and market value, The last part of the project was taking both the transactions and vehicle data and combining them to create a monthly snapshot table in Power BI. 
+### Goal of the Project  
+
+The primary goal of this project was to **enrich the airport’s parking transaction data** with detailed vehicle information — including vehicle type, specifications, and market value — to enable **customer segmentation** based on where travelers park and what kind of cars they drive.  
+
+The project was divided into three key components:  
+
+1. **Computer Vision / OCR Model** – Developed an object detection model and wrote an automated script to process license plate images and convert them into usable text strings for API integration.  
+2. **ETL Pipeline from Snowflake** – Built an ETL pipeline to integrate transaction data from the airport’s parking vendors (Chauntry, FlashValet, SKIDATA). The pipeline enriched these transcaction data with an external Vehicle Database API to append **vehicle-specific attributes** and **market value**.  
+3. **Power BI Reporting** – Combined all transaction data along with vehicle value to produce a **monthly snapshot table** in Power BI, providing an overall view of parking behaviors and customer segments for analysis and decision-making.  
+
+### Computer-Vision / OCR Model Explained
+
+The first stage of the project involved building an automated script that used a **custom-trained computer vision model** alongside an OCR reader to detect and read license plate characters from photos.  
+
+I trained a **YOLOv8 model** using open-source license plate datasets, running 100 epochs to fine-tune the model. The model first identifies where a license plate is located within the image and draws a bounding box around that area. The image is then cropped to this bounding box so that only the license plate remains.  
+
+From there, the image undergoes multiple preprocessing steps to improve OCR accuracy, including:  
+- Applying a **black-and-white filter**  
+- Using **edge detection** and **blurring** to highlight character edges  
+
+These steps help the OCR model more accurately recognize the characters on the plate.  
+
+The biggest challenge has been achieving **high OCR accuracy** using open-source models. The OCR frequently misreads common characters (e.g., confusing **S** with **Z** or **B** with **8**) or picks up extra noise. Often, the OCR produces a **partial or full license plate** but adds unwanted characters or words from the plate’s surrounding features — such as the state name, license plate frame text, or registration stickers.  
+
+This makes it difficult to extract a perfectly clean string ready for use in the **ETL / API enrichment pipeline**.  
+
+**Potential solutions** being considered include:  
+- Training a **custom OCR model** specifically for U.S. license plates  
+- Building an **object classification model** that can better distinguish numbers and letters on plates  
 
 
 
 
 
-              
-### Computer-Vision / OCR Model Explained:
-The first stage of the project was building an automated script that used a custom trained computer-vision model along with an OCR reader to detect and read license plate characaters from a photo. I trained a YOLOv8 model using open source datasets of license plates and running 100 epochs to fine-tune the model. The model first detects where a license plate is within the photo and draws a boundary box around it's approximated area, afterwards the image is then cropped to the boundary box to only contain the license plate. From here the image goes through multiple processes to make it easier for the OCR model to identify the characters from the license plate. These processes include a black and white filter, edge detection / blurring to help highlight the edges of each Character to help improve the OCR's accuracy. The hardest part of this project has been getting an open-source OCR model to give high accurate readings of license plates without picking up extra noise or mistaking common letters such as S & Z or B & 8. Most of the times it's able to get a partial / full license plate but with extra characters / words included at the beginning or end due to the OCR model reading everything within the license plate which may include the state, license plate frame, month or year of registration expiration, so it's been difficult to pull a completely perfect string that's ready to be used for the ETL / API enrichment pipeline. Some potential solutions could be training a custom OCR model to read U.S. specific license plates or training an object classification model that can classify numbers and letters from license plates.   
 
-
-### YOLOv8 License Plate Object Detection Training Script
+**YOLOv8 License Plate Object Detection Training Script**
 Script that trained the YOLOv8 Model to detect license plates within a photo, ran it for 100 epochs to improve accuracy. The model itself is pretty accurate but does make mistakes on a rare occasion
 
-### Automated OCR Script
+**Automated OCR Script**
 Script that automatically goes through photos of license plates, detects them within the image an uses an OCR reader to turn it into a string and then saves them as a .csv file 
 
 ### Additonal Resources
