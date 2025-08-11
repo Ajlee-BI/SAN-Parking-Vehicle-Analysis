@@ -1,17 +1,5 @@
 # SAN Airport Authority Business Intelligence Summer Internship 2025
 
-## Goal of the Project  
-
-The primary goal of this project was to **enrich the airport’s parking transaction data** with detailed vehicle information — including vehicle type, specifications, and market value — to enable **customer segmentation** based on where customers parked their car and what kind of car they drive.  
-
-The project was divided into three key components:  
-
-1. **Computer Vision / OCR Model** – Developed an object detection model and wrote an automated script to process license plate images and convert them into usable text strings for API integration.  
-2. **ETL Pipeline from Snowflake** – Built an ETL pipeline to integrate transaction data from the airport’s parking vendors (Chauntry, FlashValet, SKIDATA). The pipeline enriched these transcaction data with an external Vehicle Database API to append **vehicle-specific attributes** and **market value**.  
-3. **Power BI Reporting** – Combined all transaction data along with vehicle value to produce a **monthly snapshot table** in Power BI, providing an overall view of parking behaviors and customer segments for analysis and decision-making.  
-
-____--
-
 # Project Goal
 
 Enrich airport parking transactions with **vehicle details** (type, specs, market value) to enable **customer segmentation** by parking location and vehicle characteristics.
