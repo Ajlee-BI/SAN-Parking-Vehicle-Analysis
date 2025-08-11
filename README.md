@@ -10,6 +10,30 @@ The project was divided into three key components:
 2. **ETL Pipeline from Snowflake** – Built an ETL pipeline to integrate transaction data from the airport’s parking vendors (Chauntry, FlashValet, SKIDATA). The pipeline enriched these transcaction data with an external Vehicle Database API to append **vehicle-specific attributes** and **market value**.  
 3. **Power BI Reporting** – Combined all transaction data along with vehicle value to produce a **monthly snapshot table** in Power BI, providing an overall view of parking behaviors and customer segments for analysis and decision-making.  
 
+____--
+
+# Project Goal
+
+Enrich airport parking transactions with **vehicle details** (type, specs, market value) to enable **customer segmentation** by parking location and vehicle characteristics.
+
+## Scope
+
+- **CV/OCR → Plate Text**
+  - Detect license plates and OCR them into text strings for downstream APIs.
+- **ETL (Snowflake) → Enriched Facts**
+  - Ingest vendor data (Chauntry, FlashValet, SKIDATA).
+  - Join with a Vehicle Database API to append **vehicle attributes** and **market value**.
+- **Power BI → Monthly Snapshot**
+  - Publish a monthly snapshot table combining transactions and vehicle value for analysis and segmentation.
+
+## Data Flow (high level)
+
+`Plate image → OCR → Plate/state string → Vehicle API lookup → Join to vendor transactions → Enriched table in Snowflake → Power BI monthly snapshot`
+
+## Outcomes
+
+- Segment customers by **where they parked** and **what they drive**.
+- Single, consistent source for reporting and decisions.
 
 
 
