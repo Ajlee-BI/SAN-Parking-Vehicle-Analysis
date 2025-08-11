@@ -23,7 +23,54 @@ Enrich airport parking transactions with **vehicle details** (type, specs, marke
 - Segment customers by **where they parked** and **what they drive**.
 - Single, consistent source for reporting and decisions.
 
+_________
 
+## 1) Computer Vision / OCR Model
+
+**Purpose:** Convert license-plate photos into clean text strings for downstream ETL/API enrichment.
+
+### Pipeline (high level)
+`Image → YOLOv8 plate detect → Crop to bbox → Preprocess (B/W, edges, blur) → OCR → CSV`
+
+### Model & Training
+- **Detector:** YOLOv8, custom-trained on open-source license plate datasets.
+- **Training:** 100 epochs; model reliably finds plates and draws a bounding box.
+- **Output of detection:** Cropped plate image for OCR.
+
+### Preprocessing (to boost OCR)
+- Convert to **black & white**.
+- Apply **edge detection** and **blurring** to emphasize character edges.
+
+### OCR & Output
+- Run an OCR reader on the cropped, preprocessed plate.
+- Save results to **CSV** (one row per image; includes the raw OCR string).
+
+### Current Challenges
+- **Character confusions:** S↔Z, B↔8, etc.
+- **Noise capture:** Extra tokens from **state names**, **frame text**, **stickers**, or surrounding features.
+- **Partial/over-complete strings:** OCR may return only part of the plate, or a plate plus unwanted text.
+- **Impact:** Hard to produce a perfectly clean string for the ETL/API pipeline.
+
+### Mitigations Under Consideration
+- **Custom OCR** specifically trained for **U.S. license plates**.
+- **Character classifier** to better distinguish **letters vs. digits** on plates.
+
+### Scripts
+- **YOLOv8 License Plate Detection (training)**
+  - Trains a model to detect license plates in photos (100 epochs used in this project).
+  - Notes: Detector is accurate overall but still makes occasional mistakes.
+- **Automated OCR (batch)**
+  - Scans a folder of plate photos → detects plates → runs OCR → writes results to a `.csv`.
+
+> Add your actual script paths/CLI usage here when publishing (e.g., `python scripts/train_yolov8.py ...` / `python scripts/run_ocr_batch.py ...`).
+
+### Additional Resources (to link)
+- License-plate datasets: **[add link]**
+- Test photos: **[add link]**
+- License-plate–specific OCR that supports custom training: **[add link]**
+
+
+______________
 
 
 ## 1) Computer-Vision / OCR Model Explained
