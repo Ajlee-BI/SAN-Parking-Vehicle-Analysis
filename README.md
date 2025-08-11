@@ -2,7 +2,7 @@
 
 ## Goal of the Project  
 
-The primary goal of this project was to **enrich the airport’s parking transaction data** with detailed vehicle information — including vehicle type, specifications, and market value — to enable **customer segmentation** based on where travelers park and what kind of cars they drive.  
+The primary goal of this project was to **enrich the airport’s parking transaction data** with detailed vehicle information — including vehicle type, specifications, and market value — to enable **customer segmentation** based on where customers parked their car and what kind of car they drive.  
 
 The project was divided into three key components:  
 
@@ -14,7 +14,7 @@ The project was divided into three key components:
 
 
 
-## Computer-Vision / OCR Model Explained
+## 1) Computer-Vision / OCR Model Explained
 
 The first stage of the project involved building an automated script that used a **custom-trained computer vision model** alongside an OCR reader to detect and read license plate characters from photos.  
 
@@ -48,7 +48,7 @@ Script that automatically goes through photos of license plates, detects them wi
 
 
 
-## ETL Pipeline Explained:
+## 2) ETL Pipeline Explained:
 Second Stage: Parking Transaction Data Integration
 The second stage of the project focused on consolidating transaction data from three different parking lot vendor sources — Chauntry, FlashValet, and SKIDATA — into a unified, dynamic parking transaction table. This table serves as the foundation for a parking star schema, which provides a structured view of each transaction and connects to various dimensions for analysis.
 The schema captures key transaction details, including:
@@ -76,7 +76,7 @@ To standardize the data, we transformed SKIDATA’s multi-row structure into a s
 - Include an image afterwards to show the pivoted / elongated table.
 
 ## API Notebook Explained:
-
+The API Notebook is the main function of the pipeline that takes license plates and retreives vehicle value through an API service called Vehicle Databases. The notebook is orientated to pull data from a monthly sample of transactions which will be the basis of the sampled average vehicle value by parking lot. The transaction sample contains 1300 transactions calculated to be statistically signifigant for the population which I considered to be the average number of transactions by parking lot. The sampled license plates are then filtered out through DEV_BRONZE.PARKING.VEHICLE_DATABASES_RESULTS this filters out any license plates that have already been ran through the notebook ensuring that no credits are wasted and any plates that have been ran before won't be ran though again. Once the license plates have been filtered to only contain new plates the database from SQL is then imported into a Pandas dataframe where an automated loop goes through all the license plates and either returns a value or an error if the plate was invalid or not within the 5 states in the region. 
 
 
 
