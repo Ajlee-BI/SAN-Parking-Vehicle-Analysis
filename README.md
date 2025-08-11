@@ -1,6 +1,6 @@
 # SAN Airport Authority Business Intelligence Summer Internship 2025
 
-# Project Goal
+## Project Goal
 
 Enrich airport parking transactions with **vehicle details** (type, specs, market value) to enable **customer segmentation** by parking location and vehicle characteristics.
 
