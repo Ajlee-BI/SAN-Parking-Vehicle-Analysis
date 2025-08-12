@@ -1,10 +1,10 @@
 # SAN Airport Authority Business Intelligence Summer Internship 2025
 
-## Project Goal
+# Project Goal
 
 Enrich airport parking transactions with **vehicle details** (type, specs, market value) to enable **customer segmentation** by parking location and vehicle characteristics.
 
-## Scope
+# Scope
 
 - **CV/OCR → Plate Text**
   - Detect license plates and OCR them into text strings for downstream APIs.
@@ -14,18 +14,18 @@ Enrich airport parking transactions with **vehicle details** (type, specs, marke
 - **Power BI → Monthly Snapshot**
   - Publish a monthly snapshot table combining transactions and vehicle value for analysis and segmentation.
 
-## Data Flow (high level)
+# Data Flow (high level)
 
 `Plate image → OCR → Plate/state string → Vehicle API lookup → Join to vendor transactions → Enriched table in Snowflake → Power BI monthly snapshot`
 
-## Outcomes
+# Outcomes
 
 - Segment customers by **where they parked** and **what they drive**.
 - Single, consistent source for reporting and decisions.
 
 _________
 
-## 1) Computer Vision / OCR Model
+# 1) Computer Vision / OCR Model
 
 **Purpose:** Convert license-plate photos into clean text strings for downstream ETL/API enrichment.
 
