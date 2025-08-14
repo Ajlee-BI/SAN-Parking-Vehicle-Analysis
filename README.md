@@ -65,49 +65,11 @@ _________
 > Add your actual script paths/CLI usage here when publishing (e.g., `python scripts/train_yolov8.py ...` / `python scripts/run_ocr_batch.py ...`).
 
 ### Additional Resources (to link)
-- License-plate datasets: **[add link]**
+- [License plate specific OCR model that can be custom trained](https://github.com/ankandrew/fast-plate-ocr)
 - Test photos: **[add link]**
 - License-plate–specific OCR that supports custom training: **[add link]**
 
-
-______________
-
-
-## 1) Computer-Vision / OCR Model Explained
-
-The first stage of the project involved building an automated script that used a **custom-trained computer vision model** alongside an OCR reader to detect and read license plate characters from photos.  
-
-I trained a **YOLOv8 model** using open-source license plate datasets, running 100 epochs to fine-tune the model. The model first identifies where a license plate is located within the image and draws a bounding box around that area. The image is then cropped to this bounding box so that only the license plate remains.  
-
-From there, the image undergoes multiple preprocessing steps to improve OCR accuracy, including:  
-- Applying a **black-and-white filter**  
-- Using **edge detection** and **blurring** to highlight character edges  
-
-These steps help the OCR model more accurately recognize the characters on the plate.  
-
-The biggest challenge has been achieving **high OCR accuracy** using open-source models. The OCR frequently misreads common characters (e.g., confusing **S** with **Z** or **B** with **8**) or picks up extra noise. Often, the OCR produces a **partial or full license plate** but adds unwanted characters or words from the plate’s surrounding features — such as the state name, license plate frame text, or registration stickers.  
-
-This makes it difficult to extract a perfectly clean string ready for use in the **ETL / API enrichment pipeline**.  
-
-**Potential solutions** being considered include:  
-- Training a **custom OCR model** specifically for U.S. license plates  
-- Building an **object classification model** that can better distinguish numbers and letters on plates  
-
-**YOLOv8 License Plate Object Detection Training Script**
-Script that trained the YOLOv8 Model to detect license plates within a photo, ran it for 100 epochs to improve accuracy. The model itself is pretty accurate but does make mistakes on a rare occasion
-
-**Automated OCR Script**
-Script that automatically goes through photos of license plates, detects them within the image an uses an OCR reader to turn it into a string and then saves them as a .csv file 
-
-**Additonal Resources**
-[License plate specific OCR model that can be custom trained](https://github.com/ankandrew/fast-plate-ocr)
-- Include link to license plate datasets
-- Include link to test photos
-
-
-
-
-## 2) ETL Pipeline Explained:
+# 2) ETL Pipeline Explained:
 Second Stage: Parking Transaction Data Integration
 The second stage of the project focused on consolidating transaction data from three different parking lot vendor sources — Chauntry, FlashValet, and SKIDATA — into a unified, dynamic parking transaction table. This table serves as the foundation for a parking star schema, which provides a structured view of each transaction and connects to various dimensions for analysis.
 The schema captures key transaction details, including:
@@ -134,8 +96,47 @@ To standardize the data, we transformed SKIDATA’s multi-row structure into a s
 - Include Image of 1 complete transaction highlighted to show the 4 rows
 - Include an image afterwards to show the pivoted / elongated table.
 
-## API Notebook Explained:
-The API Notebook is the main function of the pipeline that takes license plates and retreives vehicle value through an API service called Vehicle Databases. The notebook is orientated to pull data from a monthly sample of transactions which will be the basis of the sampled average vehicle value by parking lot. The transaction sample contains 1300 transactions calculated to be statistically signifigant for the population which I considered to be the average number of transactions by parking lot. The sampled license plates are then filtered out through DEV_BRONZE.PARKING.VEHICLE_DATABASES_RESULTS this filters out any license plates that have already been ran through the notebook ensuring that no credits are wasted and any plates that have been ran before won't be ran though again. Once the license plates have been filtered to only contain new plates the database from SQL is then imported into a Pandas dataframe where an automated loop goes through all the license plates and either returns a value or an error if the plate was invalid or not within the 5 states in the region. 
+# API Notebook
+
+**Purpose:** Query the **Vehicle Databases** API for license plates and append **VIN** and **market value** to support monthly *average vehicle value by parking lot*.
+
+### What it does
+1. **Sample selection (monthly):**
+   - Pulls a **monthly sample (~1,300 transactions)** intended to estimate average vehicle value at the lot level.
+2. **Credit protection / de-duplication:**
+   - Excludes plates already processed by checking  
+     `DEV_BRONZE.PARKING.VEHICLE_DATABASES_RESULTS`  
+     (prevents re-calling the API and wasting credits).
+3. **API run (loop over new plates):**
+   - Loads the filtered set from SQL into a Pandas dataframe.
+   - Calls Vehicle Databases for each plate/state.
+   - Records **every attempt**—success or failure—to  
+     `DEV_BRONZE.PARKING_VEHICLE_DATABASES_API_RESULTS`.
+4. **Outputs:**
+   - A complete log of results (one row per plate attempt) including status, VIN (if found), and market value.
+   - Downstream logic aggregates to **monthly, by-lot averages**.
+
+### Result handling
+- **Success:** Valid VIN and market value returned.
+- **No hit / invalid:** Plate not found or invalid format.
+- **Out of scope:** Plate outside the **5 supported states** in the region.
+- All outcomes are persisted so the **same plate is never re-run**.
+
+### Scheduling & performance
+- **Schedule:** Runs **monthly** on the **1st**.
+- **Observed runtime:** ~**4.5 hours** for ~**1,300 plates** (≈ **4.8 plates/min**).  
+  Actual time varies with plate count and API latency.
+
+### Suggested columns for `DEV_BRONZE.PARKING_VEHICLE_DATABASES_API_RESULTS`
+- `run_id`, `plate`, `state`, `vin`, `market_value`
+- `status` (`success` | `no_hit` | `invalid` | `out_of_scope` | `error`)
+- `error_code`, `error_message` (nullable)
+- `api_response_ts`, `created_ts`
+
+### Notes / assumptions
+- The 1,300-plate sample is used as the **basis for estimating by-lot averages**; adjust as needed for precision/CI targets.
+- Keeping **all attempts** (including failures) in the results table is intentional—this **guarantees de-dupe** and conserves API credits.
+
 
 
 
