@@ -25,7 +25,7 @@ Enrich airport parking transactions with **vehicle details** (type, specs, marke
 - Segment customers by **where they parked** and **what they drive**.
 - Single, consistent source for reporting and decisions.
 
-**Pipeline Diagram**
+## Pipeline Diagram
 ![Parking Vehicle Value Pipeline](https://github.com/user-attachments/assets/54c597d4-8663-4fbe-9fb6-5c4815f153cf)
 
 
