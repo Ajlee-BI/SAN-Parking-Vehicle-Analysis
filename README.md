@@ -191,3 +191,6 @@ _____________________
 
 ## 6) Power BI Report
 Fact_Parking and other diminesnions are pulled into Power BI and the report builds visualizations to analyze vehicle value and segementation by parking lot, vehicle value, make and model etc. 
+
+## Power BI Semantic Model Diagram
+![Parking Vehicle Analysis Power BI](https://github.com/user-attachments/assets/51d038b8-ca86-405f-ba00-4c084c5d0a75)
