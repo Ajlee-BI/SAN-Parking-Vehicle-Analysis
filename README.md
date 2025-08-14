@@ -183,3 +183,7 @@ ______________________
    - 
 <img width="1838" height="766" alt="image" src="https://github.com/user-attachments/assets/96429beb-4110-41a7-a77f-435a333e87f2" />
 
+_____________________
+
+## 6) Power BI Report
+Fact_Parking and other diminesnions are pulled into Power BI and the report builds visualizations to analyze vehicle value and segementation by parking lot, vehicle value, make and model etc. 
