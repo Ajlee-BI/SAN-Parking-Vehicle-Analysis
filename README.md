@@ -72,8 +72,6 @@ _________
 
 ### Additional Resources (to link)
 - [License plate specific OCR model that can be custom trained](https://github.com/ankandrew/fast-plate-ocr)
-- Test photos: **[add link]**
-- License-plate–specific OCR that supports custom training: **[add link]**
 
 # 2) ETL Pipeline Explained:
 Second Stage: Parking Transaction Data Integration
@@ -159,7 +157,7 @@ To standardize the data, we transformed SKIDATA’s multi-row structure into a s
 - Keeping **all attempts** (including failures) in the results table is intentional—this **guarantees de-dupe** and conserves API credits & reduces run time.
 
 ### Notebook
-https://github.com/Ajlee-BI/SAN-Parking-Vehicle-Analysis/blob/main/LICENSEPLATEAPI%20(2).ipynb
+[Automated License Plate API Notebook](https://github.com/Ajlee-BI/SAN-Parking-Vehicle-Analysis/blob/main/LICENSEPLATEAPI%20(2).ipynb)
 
 ______________________
 
