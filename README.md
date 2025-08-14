@@ -103,7 +103,7 @@ To standardize the data, we transformed SKIDATA’s multi-row structure into a s
 **Purpose:** Create a **statistically valid**, per-lot monthly sample of transactions used to estimate **average vehicle value by parking lot**.
 
 ### Source & Stratification
-- Pulls from **`PROD_GOLD.PARKING.FACT_PARKING & PROD_GOLD.PARKING.DIM_PARKINGATTRIBUTES`**.
+- Pulls a directy copy of transactions and parking lot locations from **`PROD_GOLD.PARKING.FACT_PARKING & PROD_GOLD.PARKING.DIM_PARKINGATTRIBUTES`**.
 - Stratifies by **`CARPARKLOCATION`** (e.g., T1 Plaza, T2 Plaza, T1 Valet, T2 Valet).
 
 ### Statistical Design
@@ -156,18 +156,30 @@ To standardize the data, we transformed SKIDATA’s multi-row structure into a s
 
 ______________________
 
+# 5) Parking Monthly Snapshot Table
 
+**Location:** `DEV_GOLD.PARKING.PARKING_MONTHLY_SNAPSHOT`  
+**Purpose:** Monthly, per-lot rollup of key parking KPIs, including a sampled **average vehicle value by lot**.
 
+### Grain
+- **One row per:** `month` × `CARPARKLOCATION`
 
+### Sources
+- **Transactions:** `PROD_GOLD.PARKING.FACT_PARKING`
+- **Sample for vehicle value:** `MONTHLY_TXN_SAMPLE`
+- **Vehicle value lookups:** `DEV_BRONZE.PARKING_VEHICLE_DATABASES_API_RESULTS`
 
+### Core Metrics by Parking Lot
+- `txn_count` — total transactions in month
+- `revenue` — total revenue in month
+- `unique_vehicles` — distinct license plates and customer id
+- `avg_vehicle_value_by_lot` — mean market value from **sampled plates** for the lot/month
 
+### How the vehicle value is computed
+1. Start from `MONTHLY_TXN_SAMPLE` (per-lot, per-month sample).
+2. Join to `...VEHICLE_DATABASES_API_RESULTS` to fetch **VIN/market_value**.
+3. Aggregate to per-lot, per-month averages.  
+   - Exclude null/invalid values from the mean.
+   - 
+<img width="1838" height="766" alt="image" src="https://github.com/user-attachments/assets/96429beb-4110-41a7-a77f-435a333e87f2" />
 
-## Monthly_TXN_Sample
-The monthly_TXN_Sample table was saved as a procedure refresh_monthly_txn_sample which then saved as a task to run the 1st month of every month at 6:30am CA time. The monthly sample uses PROD_GOLD.PARKING.FACT_PARKING and grabs transactions based upon the CARPARKLOCATION. The table was created to provide a statisically valid number of transactions to use as a sample to get the average vehicle value by parking lot. To get the a statisically valid sample at a 95% C.I I took the average total number of transactions per parking lot for the last year since T1 Parking plaza just opened and changes in changes in valet pricing in the past have lead to a high variance in transaction counts. Using the average as the total population of the parking lot I then calculated what the sample-size would need to be to have a valid sample for each parking lot. This table is then used for the License_Plate_API Notebook these plates are pulled into the notebook filtered by DEV_BRONZE.PARKING.VEHICLE_DATABASES_API_RESULTS to ensure only new plates are brought in. The table is used to ensure that the sample plates remain the same for each run.
-
-T1 Parking Plaza >= 378
-T2 Parking Plaza >= 381
-T1 Valet Lot >= 273 
-T2 Valet Lot >= 265
-
-## MONTHLY_SNAPSHOT_
