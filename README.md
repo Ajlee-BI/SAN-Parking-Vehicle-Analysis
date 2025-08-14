@@ -158,6 +158,9 @@ To standardize the data, we transformed SKIDATA’s multi-row structure into a s
 - The 1,300-plate sample is used as the **basis for estimating by-lot averages**; adjust as needed for precision/CI targets.
 - Keeping **all attempts** (including failures) in the results table is intentional—this **guarantees de-dupe** and conserves API credits & reduces run time.
 
+### Notebook
+https://github.com/Ajlee-BI/SAN-Parking-Vehicle-Analysis/blob/main/LICENSEPLATEAPI%20(2).ipynb
+
 ______________________
 
 # 5) Parking Monthly Snapshot Table
