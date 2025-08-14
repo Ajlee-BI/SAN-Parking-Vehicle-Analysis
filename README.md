@@ -96,46 +96,39 @@ To standardize the data, we transformed SKIDATA’s multi-row structure into a s
 - Include Image of 1 complete transaction highlighted to show the 4 rows
 - Include an image afterwards to show the pivoted / elongated table.
 
-# API Notebook
+# 3) Vehicle Databases API Notebook
 
 **Purpose:** Query the **Vehicle Databases** API for license plates and append **VIN** and **market value** to support monthly *average vehicle value by parking lot*.
 
 ### What it does
 1. **Sample selection (monthly):**
-   - Pulls a **monthly sample (~1,300 transactions)** intended to estimate average vehicle value at the lot level.
+   - Pulls from DEV_BRONZE.PARKING.MONTHLY_TXN_SAMPLE to get a **monthly sample (~1,300 transactions)** to estimate average vehicle value at the lot level.
 2. **Credit protection / de-duplication:**
    - Excludes plates already processed by checking  
      `DEV_BRONZE.PARKING.VEHICLE_DATABASES_RESULTS`  
      (prevents re-calling the API and wasting credits).
 3. **API run (loop over new plates):**
    - Loads the filtered set from SQL into a Pandas dataframe.
-   - Calls Vehicle Databases for each plate/state.
+   - Calls Vehicle Databases API for each plate/state.
    - Records **every attempt**—success or failure—to  
      `DEV_BRONZE.PARKING_VEHICLE_DATABASES_API_RESULTS`.
 4. **Outputs:**
    - A complete log of results (one row per plate attempt) including status, VIN (if found), and market value.
-   - Downstream logic aggregates to **monthly, by-lot averages**.
 
 ### Result handling
-- **Success:** Valid VIN and market value returned.
-- **No hit / invalid:** Plate not found or invalid format.
-- **Out of scope:** Plate outside the **5 supported states** in the region.
-- All outcomes are persisted so the **same plate is never re-run**.
+- **Success:** Valid VIN and market value returned goes through the pipeline and all ends up in DEV_SILVER.PARKING.PARKING_VEHICLE_VALUE.
+- **No hit / invalid:** Plates that fail to return a value either because it's not within the 5 listed states or is an invalid license plate number will be saved in the bronze layer and will have a null value in all the columns besides "STATE" and "PLATE"
+- All outcomes are saved into the bronze layer so the **same plate is never re-run**.
 
 ### Scheduling & performance
 - **Schedule:** Runs **monthly** on the **1st**.
 - **Observed runtime:** ~**4.5 hours** for ~**1,300 plates** (≈ **4.8 plates/min**).  
   Actual time varies with plate count and API latency.
 
-### Suggested columns for `DEV_BRONZE.PARKING_VEHICLE_DATABASES_API_RESULTS`
-- `run_id`, `plate`, `state`, `vin`, `market_value`
-- `status` (`success` | `no_hit` | `invalid` | `out_of_scope` | `error`)
-- `error_code`, `error_message` (nullable)
-- `api_response_ts`, `created_ts`
 
 ### Notes / assumptions
 - The 1,300-plate sample is used as the **basis for estimating by-lot averages**; adjust as needed for precision/CI targets.
-- Keeping **all attempts** (including failures) in the results table is intentional—this **guarantees de-dupe** and conserves API credits.
+- Keeping **all attempts** (including failures) in the results table is intentional—this **guarantees de-dupe** and conserves API credits & reduces run time.
 
 
 
