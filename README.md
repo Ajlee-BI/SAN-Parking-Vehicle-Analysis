@@ -1,5 +1,7 @@
 # SAN Airport Authority Business Intelligence Summer Internship 2025
 
+______________________________________________________
+
 # Project Goal
 
 Enrich airport parking transactions with **vehicle details** (type, specs, market value) to enable **customer segmentation** by parking location and vehicle characteristics.
@@ -96,7 +98,29 @@ To standardize the data, we transformed SKIDATA’s multi-row structure into a s
 - Include Image of 1 complete transaction highlighted to show the 4 rows
 - Include an image afterwards to show the pivoted / elongated table.
 
-# 3) Vehicle Databases API Notebook
+# 3) MONTHLY_TXN_SAMPLE
+
+**Purpose:** Create a **statistically valid**, per-lot monthly sample of transactions used to estimate **average vehicle value by parking lot**.
+
+### Source & Stratification
+- Pulls from **`PROD_GOLD.PARKING.FACT_PARKING & PROD_GOLD.PARKING.DIM_PARKINGATTRIBUTES`**.
+- Stratifies by **`CARPARKLOCATION`** (e.g., T1 Plaza, T2 Plaza, T1 Valet, T2 Valet).
+
+### Statistical Design
+- Target **95% confidence**.
+- For each lot, use the **average total transactions over the last year** as the lot’s population size (helps stabilize variance given T1’s recent opening and historical valet pricing changes).
+- Compute the **required sample size per lot** and fix minimums:
+  - **T1 Parking Plaza:** ≥ **378**
+  - **T2 Parking Plaza:** ≥ **381**
+  - **T1 Valet Lot:** ≥ **273**
+  - **T2 Valet Lot:** ≥ **265**
+    
+### Scheduling
+- Stored procedure: **`refresh_monthly_txn_sample()`** (builds/refreshes `MONTHLY_TXN_SAMPLE`).
+- **Snowflake TASK** runs **monthly on the 1st at 06:30 America/Los_Angeles**.
+
+
+# 4) Vehicle Databases API Notebook
 
 **Purpose:** Query the **Vehicle Databases** API for license plates and append **VIN** and **market value** to support monthly *average vehicle value by parking lot*.
 
@@ -130,6 +154,8 @@ To standardize the data, we transformed SKIDATA’s multi-row structure into a s
 - The 1,300-plate sample is used as the **basis for estimating by-lot averages**; adjust as needed for precision/CI targets.
 - Keeping **all attempts** (including failures) in the results table is intentional—this **guarantees de-dupe** and conserves API credits & reduces run time.
 
+______________________
+
 
 
 
@@ -137,5 +163,11 @@ To standardize the data, we transformed SKIDATA’s multi-row structure into a s
 
 
 ## Monthly_TXN_Sample
+The monthly_TXN_Sample table was saved as a procedure refresh_monthly_txn_sample which then saved as a task to run the 1st month of every month at 6:30am CA time. The monthly sample uses PROD_GOLD.PARKING.FACT_PARKING and grabs transactions based upon the CARPARKLOCATION. The table was created to provide a statisically valid number of transactions to use as a sample to get the average vehicle value by parking lot. To get the a statisically valid sample at a 95% C.I I took the average total number of transactions per parking lot for the last year since T1 Parking plaza just opened and changes in changes in valet pricing in the past have lead to a high variance in transaction counts. Using the average as the total population of the parking lot I then calculated what the sample-size would need to be to have a valid sample for each parking lot. This table is then used for the License_Plate_API Notebook these plates are pulled into the notebook filtered by DEV_BRONZE.PARKING.VEHICLE_DATABASES_API_RESULTS to ensure only new plates are brought in. The table is used to ensure that the sample plates remain the same for each run.
+
+T1 Parking Plaza >= 378
+T2 Parking Plaza >= 381
+T1 Valet Lot >= 273 
+T2 Valet Lot >= 265
 
 ## MONTHLY_SNAPSHOT_
