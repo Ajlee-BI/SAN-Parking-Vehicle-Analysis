@@ -100,7 +100,7 @@ To standardize the data, we transformed SKIDATA’s multi-row structure into a s
 - Include Image of 1 complete transaction highlighted to show the 4 rows
 - Include an image afterwards to show the pivoted / elongated table.
 
-# 3) MONTHLY_TXN_SAMPLE
+# 3) Monthly_TXN_Sample Table
 
 **Purpose:** Create a **statistically valid**, per-lot monthly sample of transactions used to estimate **average vehicle value by parking lot**.
 
