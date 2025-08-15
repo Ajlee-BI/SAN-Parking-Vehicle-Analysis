@@ -72,6 +72,7 @@ _________
 
 ### Additional Resources (to link)
 - [License plate specific OCR model that can be custom trained](https://github.com/ankandrew/fast-plate-ocr)
+- [License Plate Reader Notebook](https://github.com/Ajlee-BI/SAN-Parking-Vehicle-Analysis/tree/main/License%20Plate%20Reader%20OCR)
 
 # 2) ETL Pipeline Explained:
 Second Stage: Parking Transaction Data Integration
@@ -195,4 +196,6 @@ Fact_Parking and other diminesnions are pulled into Power BI and the report buil
 
 ## Power BI Semantic Model Diagram
 ![Parking Vehicle Analysis Power BI](https://github.com/user-attachments/assets/51d038b8-ca86-405f-ba00-4c084c5d0a75)
+
+## Power BI Report Image
 <img width="1316" height="737" alt="image" src="https://github.com/user-attachments/assets/e2e25fcd-73be-4f8d-a9d7-e85962e113c2" />
