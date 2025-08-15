@@ -195,3 +195,4 @@ Fact_Parking and other diminesnions are pulled into Power BI and the report buil
 
 ## Power BI Semantic Model Diagram
 ![Parking Vehicle Analysis Power BI](https://github.com/user-attachments/assets/51d038b8-ca86-405f-ba00-4c084c5d0a75)
+<img width="1316" height="737" alt="image" src="https://github.com/user-attachments/assets/e2e25fcd-73be-4f8d-a9d7-e85962e113c2" />
