@@ -19,7 +19,7 @@ SELECT
 FROM DEV_BRONZE.PARKING.CHAUNTRY_BOOKING
 )
 
-UNION ALL
+UNION ALL /*This union keeps duplicates between rows and does not deduplicate for speed and performance*/
 
 -- Importing Flash Valet Data from Prod_Bronze 
 /* 
@@ -62,7 +62,7 @@ WITH EntryTxnPairs AS (
             PARTITION BY "PlateNo"
             ORDER BY     "Time"
         ) AS EXIT_DATE,
-
+/*Lead Function says look at column "Time" and then group all of the rows by the same "PlantNo" and then order the rows in descending order by "Time" and name this new column EXIT_DATE* so there is a new column that will grab the next row for license plate and time and put it under a new column called "EXIT_DATE"*/
 -- Lead function that designates the next MovementType 
         LEAD("MovementTypeDesig") OVER (
             PARTITION BY "PlateNo"
@@ -93,4 +93,5 @@ FROM   EntryTxnPairs
 
 SELECT *
 FROM DEV_SILVER.PARKING.PARKING_TRANSACTION
+
 WHERE SOURCE_SYSTEM_NAME = 'SKIDATA'
