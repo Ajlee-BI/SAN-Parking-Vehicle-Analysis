@@ -68,8 +68,6 @@ _________
 - **Automated OCR (batch)**
   - Scans a folder of plate photos → detects plates → runs OCR → writes results to a `.csv`.
 
-> Add your actual script paths/CLI usage here when publishing (e.g., `python scripts/train_yolov8.py ...` / `python scripts/run_ocr_batch.py ...`).
-
 ### Additional Resources (to link)
 - [License plate specific OCR model that can be custom trained](https://github.com/ankandrew/fast-plate-ocr)
 - [License Plate Reader Notebook](https://github.com/Ajlee-BI/SAN-Parking-Vehicle-Analysis/tree/main/License%20Plate%20Reader%20OCR)
@@ -84,29 +82,24 @@ The schema captures key transaction details, including:
 - Source system (Chauntry, FlashValet, or SKIDATA)
 
 **Key Challenge: SKIDATA Transaction Structure**
-One of the biggest challenges during this phase was handling SKIDATA’s unique table design. Unlike the other vendors, SKIDATA records up to four rows for a single parking transaction because it logs each step in the parking process separately and each row stores a revenue amount but the only one that has an actual number besides zero.
+One of the biggest challenges during this phase was handling SKIDATA’s unique table design. Unlike the other vendors, SKIDATA records up to four rows for a single parking transaction because it logs each step in the parking process separately and each row stores a revenue amount, but the transaction stage is the only record that contains the actual revenue amount, while all other stages input a zero for revenue, making the table unnecessarily elongated
 
 Each row is labeled with a MovementTypeDesig, which indicates the stage of the transaction. The sequence can vary depending on how the customer interacts with the system. For example:
 
 If a customer pays at the pay station before driving to the gate, the sequence looks like:
 (Entry → Transaction → Exit)
 
-If a customer drives to the gate and is rejected before paying, the sequence may look like:
+If a customer drives to the and pays at the gate, the sequence may look like:
 (Entry → Rejection → Exit → Transaction)
 
 To standardize the data, we transformed SKIDATA’s multi-row structure into a single-row format by using SQL lead and lag functions, combined with a WHERE clause to filter only rows that represented complete transactions. This approach effectively pivoted the data, turning sequential movement events into columns. Careful mapping of MovementTypeDesig values was essential to ensure every transaction was accurately reconstructed and aligned within the unified schema.
-
-
-
-- Include Image of 1 complete transaction highlighted to show the 4 rows
-- Include an image afterwards to show the pivoted / elongated table.
 
 # 3) Monthly_TXN_Sample Table
 
 **Purpose:** Create a **statistically valid**, per-lot monthly sample of transactions used to estimate **average vehicle value by parking lot**.
 
 ### Source & Stratification
-- Pulls a directy copy of transactions and parking lot locations from **`PROD_GOLD.PARKING.FACT_PARKING & PROD_GOLD.PARKING.DIM_PARKINGATTRIBUTES`**.
+- Pulls a direct copy of transactions and parking lot locations from **`PROD_GOLD.PARKING.FACT_PARKING & PROD_GOLD.PARKING.DIM_PARKINGATTRIBUTES`**.
 - Stratifies by **`CARPARKLOCATION`** (e.g., T1 Plaza, T2 Plaza, T1 Valet, T2 Valet).
 
 ### Statistical Design
@@ -143,9 +136,9 @@ To standardize the data, we transformed SKIDATA’s multi-row structure into a s
    - A complete log of results (one row per plate attempt) including status, VIN (if found), and market value.
 
 ### Result handling
-- **Success:** Valid VIN and market value returned goes through the pipeline and all ends up in DEV_SILVER.PARKING.PARKING_VEHICLE_VALUE.
-- **No hit / invalid:** Plates that fail to return a value either because it's not within the 5 listed states or is an invalid license plate number will be saved in the bronze layer and will have a null value in all the columns besides "STATE" and "PLATE"
-- All outcomes are saved into the bronze layer so the **same plate is never re-run**.
+- **Success:** Valid VIN and market value returned goes through the pipeline and it ends up in DEV_SILVER.PARKING.PARKING_VEHICLE_VALUE.
+- **No hit / invalid:** Plates that fail to return a value either because they're not within the 5 listed states or is an invalid license plate number will be saved in the bronze layer and will have a null value in all the columns besides "STATE" and "PLATE"
+- All outcomes are saved into the bronze layer to ensure that the **same plate is never re-run**.
 
 ### Scheduling & performance
 - **Schedule:** Runs **monthly** on the **1st**.
@@ -153,7 +146,7 @@ To standardize the data, we transformed SKIDATA’s multi-row structure into a s
   Actual time varies with plate count and API latency.
 
 
-### Notes / assumptions
+### Notes / Assumptions
 - The 1,300-plate sample is used as the **basis for estimating by-lot averages**; adjust as needed for precision/CI targets.
 - Keeping **all attempts** (including failures) in the results table is intentional—this **guarantees de-dupe** and conserves API credits & reduces run time.
 
@@ -192,7 +185,7 @@ ______________________
 _____________________
 
 ## 6) Power BI Report
-Fact_Parking and other diminesnions are pulled into Power BI and the report builds visualizations to analyze vehicle value and segementation by parking lot, vehicle value, make and model etc. 
+Fact_Parking and other dimensions are pulled into Power BI, and the report builds visualizations to analyze vehicle value and segmentation by parking lot, vehicle value, make and model etc. 
 
 ## Power BI Semantic Model Diagram
 ![Parking Vehicle Analysis Power BI](https://github.com/user-attachments/assets/51d038b8-ca86-405f-ba00-4c084c5d0a75)
