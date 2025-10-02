@@ -89,7 +89,7 @@ Each row is labeled with a MovementTypeDesig, which indicates the stage of the t
 If a customer pays at the pay station before driving to the gate, the sequence looks like:
 (Entry → Transaction → Exit)
 
-If a customer drives to the and pays at the gate, the sequence may look like:
+If a customer drives to the gate and pays at the gate, the sequence may look like:
 (Entry → Rejection → Exit → Transaction)
 
 To standardize the data, we transformed SKIDATA’s multi-row structure into a single-row format by using SQL lead and lag functions, combined with a WHERE clause to filter only rows that represented complete transactions. This approach effectively pivoted the data, turning sequential movement events into columns. Careful mapping of MovementTypeDesig values was essential to ensure every transaction was accurately reconstructed and aligned within the unified schema.
